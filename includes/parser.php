@@ -37,6 +37,10 @@ function symbol( $command ) {
     return substr( $command, 1 ); 
 }
 
+function label( $command ) {
+    return substr( $command, 1, -1 );
+}
+
 function dest( $command ) {
     if ( strpos( $command, '=' ) ) { // if =, get everything before it
         $pos = strpos( $command, '=' );
@@ -52,7 +56,9 @@ function comp( $command ) {
         return substr( $command, $begin + 1, $end );
     }    
     if ( $begin ) {
-        return substr( $command, $begin + 1 ); // COMP after DEST & no JMP
+        $cmmnt = strpos( $command, ' ' );
+        $result = substr( $command, $begin + 1, $cmmnt ); // COMP after DEST & no JMP
+        return trim( $result );
     }
     return substr( $command, 0, $end ); // COMP before JMP & no Dest
 }
@@ -60,7 +66,9 @@ function comp( $command ) {
 function jump( $command ) {
     if ( strpos( $command, ';' ) ) { // if ;, get everything after it
         $pos = strpos( $command, ';' );
-        return substr( $command, $pos + 1);
+        $cmmnt = strpos( $command, ' ' );
+        $result =  substr( $command, $pos + 1, $cmmnt );
+        return trim( $result );
     }
     return null;
 }

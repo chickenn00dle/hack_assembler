@@ -86,19 +86,20 @@ function translateVal( $val ) {
 }
 
 // Translation 
-function translateParsedLine( $parsedLine ) {
+function translateParsedLine( $parsedLine, $symbolsTable ) {
     $type = $parsedLine[0];
     $cmd = $parsedLine[1];
     
     switch ( $type ) {
         case 'A_Command':
-            return translateVal( $cmd ) . "\n";
+            $val = is_numeric( $cmd ) ? $cmd : $symbolsTable->getAddress( $cmd );
+            return translateVal( $val );
             break;
         case 'C_Command':
             $destbits = translateDest( $cmd[ 0 ] ); 
             $compbits = translateComp( $cmd[ 1 ] ); 
             $jumpbits = translateJump( $cmd[ 2 ] ); 
-            return '111' . $compbits . $destbits . $jumpbits . "\n";
+            return '111' . $compbits . $destbits . $jumpbits;
             break;
     }
 }
