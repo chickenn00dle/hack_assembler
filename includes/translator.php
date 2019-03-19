@@ -84,3 +84,22 @@ function translateVal( $val ) {
     $abits = str_pad( $bin, 16, '0', STR_PAD_LEFT);
     return $abits;
 }
+
+// Translation 
+function translateParsedLine( $parsedLine ) {
+    $type = $parsedLine[0];
+    $cmd = $parsedLine[1];
+    
+    switch ( $type ) {
+        case 'A_Command':
+            return translateVal( $cmd ) . "\n";
+            break;
+        case 'C_Command':
+            $destbits = translateDest( $cmd[ 0 ] ); 
+            $compbits = translateComp( $cmd[ 1 ] ); 
+            $jumpbits = translateJump( $cmd[ 2 ] ); 
+            return '111' . $compbits . $destbits . $jumpbits . "\n";
+            break;
+    }
+}
+

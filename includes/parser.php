@@ -1,8 +1,4 @@
 <?php 
-
-// import translator
-include_once( 'translator.php' );
-
 function hasMoreCommands( $file ) {
     return !feof( $file );
 }
@@ -36,14 +32,13 @@ function commandType( $line ) {
     
 }
 
-
-// These functions parse for the actual commands 
+// These functions parse for actual commands 
 function symbol( $command ) {
     return substr( $command, 1 ); 
 }
 
 function dest( $command ) {
-    if ( strpos( $command, '=' ) ) { // if there is an =, get everything before it
+    if ( strpos( $command, '=' ) ) { // if =, get everything before it
         $pos = strpos( $command, '=' );
         return substr( $command, 0, $pos );
     }
@@ -51,8 +46,8 @@ function dest( $command ) {
 }
 
 function comp( $command ) {
-    $begin = strpos( $command, '=' ); // Get location of C_Instruction start
-    $end = strpos( $command, ';' );   // Get location of C_Instruction end 
+    $begin = strpos( $command, '=' ); // C_Instruction start
+    $end = strpos( $command, ';' );   // C_Instruction end 
     if ( $begin && $end ) { // COMP between DEST && JMP
         return substr( $command, $begin + 1, $end );
     }    
@@ -63,27 +58,16 @@ function comp( $command ) {
 }
 
 function jump( $command ) {
-    if ( strpos( $command, ';' ) ) { // if there is a ;, get everything after it
+    if ( strpos( $command, ';' ) ) { // if ;, get everything after it
         $pos = strpos( $command, ';' );
         return substr( $command, $pos + 1);
     }
     return null;
 }
 
-
-// Helper function to generate new filename for writing
-function writeFilename( $filename ) {
-    if ( strpos( $filename, '.' ) ) {
-        $pos = strpos( $filename, '.' );
-        $new = substr( $filename, 0, $pos );
-        return $new . '.hack';
-    } else {
-        throw new Exception( 'Invalid Filename format for write' );
-    }
-}
-
 // Primary parse function
-function parse( $file, $writefile ) {
+function parse( $file ) {
+    $parseArr;
     while ( hasMoreCommands( $file ) ) {
         $next = advance( $file ); 
         $line = trim( $next );
@@ -95,16 +79,14 @@ function parse( $file, $writefile ) {
                 break;
             case 'A_Command':
                 $acmd = symbol( $line );
-                fwrite( $writefile, translateVal( $acmd ) . "\n" );
+                $parseArr[] = [ 'A_Command', $acmd ];
                 break;
             case 'C_Command':
                 $destcmd = dest( $line );
                 $compcmd = comp( $line );
                 $jumpcmd = jump( $line );
-                $destbits = translateDest( $destcmd );
-                $compbits = translateComp( $compcmd );
-                $jumpbits = translateJump( $jumpcmd );
-                fwrite( $writefile, '111' . $compbits . $destbits . $jumpbits . "\n");
+                $parseArr[] = [ 'C_Command', [ $destcmd, $compcmd, $jumpcmd ] ];
         }
     }
+    return $parseArr;
 }
