@@ -52,25 +52,36 @@ function dest( $command ) {
 function comp( $command ) {
     $begin = strpos( $command, '=' ); // C_Instruction start
     $end = strpos( $command, ';' );   // C_Instruction end 
+    $comment = strpos( $command, ' ' ); // Check for comments
     if ( $begin && $end ) { // COMP between DEST && JMP
         return substr( $command, $begin + 1, $end );
     }    
     if ( $begin ) {
         $cmmnt = strpos( $command, ' ' );
-        $result = substr( $command, $begin + 1, $cmmnt ); // COMP after DEST & no JMP
+        $result = substr( $command, $begin + 1 ); // COMP after DEST & no JMP
         return trim( $result );
     }
     return substr( $command, 0, $end ); // COMP before JMP & no Dest
 }
 
 function jump( $command ) {
+    $comment = strpos( $command, ' ' ); // Check for comments
     if ( strpos( $command, ';' ) ) { // if ;, get everything after it
         $pos = strpos( $command, ';' );
         $cmmnt = strpos( $command, ' ' );
-        $result =  substr( $command, $pos + 1, $cmmnt );
+        $result =  substr( $command, $pos + 1 );
         return trim( $result );
     }
     return null;
+}
+
+// Helper function to strip comments
+function stripComments( $line ) {
+    $comment = strpos( $line, '//' );
+    if ( $comment ) {
+        return substr( $line, 0, $comment - 1 );
+    }
+    return $line;
 }
 
 // Primary parse function
@@ -78,7 +89,8 @@ function parse( $file ) {
     $parseArr;
     while ( hasMoreCommands( $file ) ) {
         $next = advance( $file ); 
-        $line = trim( $next );
+        $strippedLine = stripComments( $next );
+        $line = trim( $strippedLine );
         $command = commandType( $line );
         switch ( $command ) {
             case 'SKIP':

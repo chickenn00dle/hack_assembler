@@ -24,6 +24,8 @@ if ( $filename && file_exists( $filename ) ) { // Confirm file exists
     $file = fopen( $filename, 'r' ); // Open file read only
     $symbols = parseSymbols( $file ); // Fill symbol table 
     rewind( $file );
+    parseSymAddr( $file, $symbols );
+    rewind( $file );
     $parseArr = parse( $file ); // Generate parse array
     $writefile = fopen( $writename, 'w' ) or die( 'Unable to open file ' . $writename ); // Open write file write only
     foreach ( $parseArr as $parsedLine ) { // Iterate through parse array and translate into bits

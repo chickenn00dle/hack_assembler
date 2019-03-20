@@ -53,7 +53,7 @@ $JUMPARR = array(
 function translateDest( $dest ) {
     global $DESTARR;
     if ( isset( $dest ) ) {
-        $bits = $DESTARR[ $dest ] ;
+        $bits = $DESTARR[ $dest ];
         return $bits;
     }
     return '000';
