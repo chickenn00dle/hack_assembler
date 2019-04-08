@@ -27,8 +27,6 @@ cd [new_name]
 If you don't have any `asm` files to test, grab some from the official nand2Tetris website:
 https://www.nand2tetris.org/project06
 
-### Break down into end to end tests
-
 Using `Max.asm` provided by the nand2Tetris, make sure you are in the assembler directory and you have added `Add.asm` to this directory.
 
 ```
